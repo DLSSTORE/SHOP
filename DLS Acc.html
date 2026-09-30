@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>DLS STORE</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#04130f; --line:#0f4a39; --chalk:#f2f7f4; --mute:#9bb8ad; --gold:#ffc83d; --mint:#3ff2b0;
+  --display:"Bricolage Grotesque","Be Vietnam Pro",system-ui,sans-serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+body{margin:0;background:var(--night);color:var(--chalk);font-family:var(--body);line-height:1.65;overflow-x:hidden}
+#scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+main,header,footer{position:relative;z-index:1}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,5vw,56px);background:linear-gradient(var(--night),transparent)}
+.logo{font-family:var(--display);font-weight:800;font-size:1.25rem;text-decoration:none}
+.logo b{color:var(--gold)}
+nav{display:flex;gap:22px;font-size:.95rem;align-items:center}
+nav a{text-decoration:none;color:var(--mute)}
+nav a:hover{color:var(--chalk)}
+@media(max-width:640px){nav a:not(.cta-s){display:none}}
+nav .cta-s{color:var(--night);background:var(--gold);padding:6px 16px;border-radius:99px;font-weight:600}
+section{padding:clamp(56px,10vw,120px) clamp(16px,5vw,56px);max-width:1180px;margin:0 auto}
+.hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,8vw,5.6rem);line-height:.98;letter-spacing:-.03em;margin:0 0 20px;max-width:10ch}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.5vw,3rem);line-height:1.05;letter-spacing:-.02em;margin:0 0 12px}
+.lead{max-width:46ch;color:var(--mute);font-size:1.1rem;margin:0 0 26px}
+.buy{max-width:520px;margin:0 0 28px;padding:18px 22px;border-radius:16px;border:1.5px solid var(--gold);background:rgba(255,200,61,.1);backdrop-filter:blur(8px);font-weight:600;font-size:1.15rem;line-height:1.45;box-shadow:0 0 44px rgba(255,200,61,.22);animation:pulse 2.6s ease-in-out infinite}
+.buy em{font-style:normal;color:var(--gold)}
+@keyframes pulse{50%{box-shadow:0 0 70px rgba(255,200,61,.42)}}
+@media(prefers-reduced-motion:reduce){.buy{animation:none}}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 26px;border-radius:12px;font-weight:600;text-decoration:none;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.gold{background:var(--gold);color:var(--night)}
+.btn.ghost{border:1.5px solid var(--line);background:rgba(6,43,34,.6);backdrop-filter:blur(6px)}
+.panel{background:rgba(4,19,15,.74);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:28px}
+.cols{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:32px}
+.panel h3{font-family:var(--display);font-size:1.5rem;margin:0 0 18px}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:16px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--mint);color:var(--night);font-family:var(--display);font-weight:800}
+.sell li::before{background:var(--gold)}
+.steps b{display:block}
+.steps span{color:var(--mute)}
+details{border-bottom:1px solid var(--line);padding:16px 0}
+summary{cursor:pointer;font-weight:600;font-size:1.05rem}
+details p{color:var(--mute);margin:10px 0 0;max-width:62ch}
+.contact{text-align:center}
+.contact .btns{justify-content:center}
+.note{font-size:.85rem;color:var(--mute);max-width:70ch;margin:20px auto 0}
+footer{text-align:center;padding:28px 16px 40px;color:var(--mute);font-size:.85rem}
+
+h1{background:linear-gradient(100deg,#fff 25%,var(--mint) 55%,var(--gold) 80%,#fff);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite;text-shadow:none;filter:drop-shadow(0 6px 30px rgba(63,242,176,.25))}
+@keyframes shine{to{background-position:-220% 0}}
+.buy{position:relative;overflow:hidden}
+.buy::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);transform:translateX(-120%);animation:sweep 3.6s ease-in-out infinite}
+@keyframes sweep{60%,100%{transform:translateX(120%)}}
+.btn.gold{position:relative;box-shadow:0 10px 30px rgba(255,200,61,.35),inset 0 -3px 0 rgba(0,0,0,.18)}
+.btn.gold:hover{box-shadow:0 16px 44px rgba(255,200,61,.55),inset 0 -3px 0 rgba(0,0,0,.18)}
+.cols,.contact,.hero{perspective:1200px}
+.panel{position:relative;transform-style:preserve-3d;transition:transform .25s ease-out,box-shadow .3s;will-change:transform;box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}
+.panel::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(420px circle at var(--gx,50%) var(--gy,0%),rgba(63,242,176,.16),transparent 60%);opacity:0;transition:opacity .3s}
+.panel:hover::after{opacity:1}
+.panel h3,.steps li{transform:translateZ(28px)}
+.steps li::before{box-shadow:0 8px 18px rgba(0,0,0,.4),inset 0 -3px 0 rgba(0,0,0,.2)}
+.rv{opacity:0;transform:perspective(900px) rotateX(16deg) translateY(36px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){h1,.buy::after{animation:none}.rv{opacity:1;transform:none;transition:none}}
+
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 70% 40%,transparent 30%,rgba(2,9,7,.75) 100%),linear-gradient(180deg,rgba(2,9,7,.55),transparent 25%,transparent 70%,rgba(2,9,7,.7))}
+#spot{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(520px circle at var(--mx,70%) var(--my,30%),rgba(63,242,176,.10),transparent 65%)}
+#bar{position:fixed;top:0;left:0;height:3px;width:100%;z-index:9;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--mint),var(--gold))}
+header{margin:calc(env(safe-area-inset-top,0px) + 12px) auto 0;width:min(1120px,calc(100% - 24px));padding:10px 12px 10px 22px;border-radius:99px;background:rgba(4,19,15,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(63,242,176,.18);box-shadow:0 10px 40px rgba(0,0,0,.35)}
+header{top:calc(env(safe-area-inset-top,0px) + 12px)}
+.logo{font-size:1.3rem;display:flex;align-items:center;gap:8px}
+.logo::before{content:"";width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfe 40%,#0f4a39 41%,#04130f 60%,#f2f7f4 61%);box-shadow:0 0 14px rgba(63,242,176,.6)}
+.badge{display:inline-flex;align-items:center;gap:10px;width:max-content;max-width:100%;padding:8px 16px;margin-bottom:22px;border-radius:99px;font-size:.92rem;font-weight:500;background:rgba(63,242,176,.1);border:1px solid rgba(63,242,176,.35);backdrop-filter:blur(8px)}
+.badge i{width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(63,242,176,.7);animation:ping 1.8s infinite}
+@keyframes ping{to{box-shadow:0 0 0 12px rgba(63,242,176,0)}}
+h1{font-size:clamp(2.8rem,8.6vw,6.4rem);letter-spacing:-.035em}
+.lead{font-size:1.15rem}
+.buy{border-radius:20px;padding:22px 26px;font-size:1.25rem;background:linear-gradient(135deg,rgba(255,200,61,.18),rgba(255,200,61,.05));border:1.5px solid rgba(255,200,61,.75)}
+.btn{border-radius:14px;font-size:1.02rem}
+.btn.zalo{color:#fff;background:linear-gradient(135deg,#1a7dff,#0057e6);box-shadow:0 12px 34px rgba(0,104,255,.5),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.2)}
+.btn.zalo:hover{box-shadow:0 18px 48px rgba(0,104,255,.7),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.2)}
+.btn.ghost{background:rgba(6,43,34,.55);border-color:rgba(63,242,176,.3)}
+.ticker{position:relative;z-index:1;overflow:hidden;padding:16px 0;border-block:1px solid rgba(63,242,176,.18);background:rgba(4,19,15,.55);backdrop-filter:blur(8px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.track{display:flex;align-items:center;gap:28px;width:max-content;animation:roll 38s linear infinite;font-family:var(--display);font-weight:800;font-size:1.5rem;white-space:nowrap}
+.track span{background:linear-gradient(90deg,var(--chalk),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.track b{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);flex:none}
+@keyframes roll{to{transform:translateX(-50%)}}
+h2{position:relative;padding-bottom:16px}
+h2::after{content:"";position:absolute;left:0;bottom:0;width:64px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--mint),var(--gold))}
+.contact h2::after{left:50%;margin-left:-32px}
+.panel{border:1px solid transparent;border-radius:24px;padding:32px;background:linear-gradient(160deg,rgba(9,40,32,.85),rgba(4,19,15,.85)) padding-box,linear-gradient(135deg,rgba(63,242,176,.7),rgba(63,242,176,.08) 45%,rgba(255,200,61,.55)) border-box}
+.panel.sell{background:linear-gradient(160deg,rgba(40,32,9,.8),rgba(4,19,15,.85)) padding-box,linear-gradient(135deg,rgba(255,200,61,.75),rgba(255,200,61,.08) 45%,rgba(63,242,176,.5)) border-box}
+.panel h3{font-size:1.65rem}
+.steps li{position:relative}
+.steps li:not(:last-child)::after{content:"";position:absolute;left:19px;top:46px;bottom:-14px;width:2px;background:linear-gradient(var(--mint),transparent)}
+.steps.sell li:not(:last-child)::after{background:linear-gradient(var(--gold),transparent)}
+.steps.sell li::before{color:var(--night)}
+.steps b{font-size:1.05rem}
+details{margin-bottom:12px;padding:0;border:1px solid var(--line);border-radius:16px;background:rgba(4,19,15,.6);backdrop-filter:blur(8px);transition:border-color .3s,background .3s}
+details[open]{border-color:rgba(63,242,176,.5);background:rgba(9,40,32,.7)}
+summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(63,242,176,.15);color:var(--mint);font-size:1.3rem;transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 22px 20px;margin:0}
+.contact .panel{padding:clamp(32px,6vw,64px);background:radial-gradient(600px circle at 50% 0%,rgba(0,104,255,.22),transparent 70%),linear-gradient(160deg,rgba(9,40,32,.88),rgba(4,19,15,.9)) padding-box,linear-gradient(135deg,rgba(0,104,255,.9),rgba(63,242,176,.3),rgba(255,200,61,.7)) border-box}
+footer{border-top:1px solid rgba(63,242,176,.15);background:rgba(2,9,7,.6);backdrop-filter:blur(8px)}
+@media(prefers-reduced-motion:reduce){.track,.badge i{animation:none}}
+
+/* ===== KHOÁ 2 BÊN TRÁI/PHẢI TRÊN ĐIỆN THOẠI ===== */
+html{overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom;-webkit-text-size-adjust:100%;interpolate-size:allow-keywords}
+body{overflow-x:clip;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom;max-width:100%;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+main,section,footer,.ticker{max-width:100%}
+section{padding-left:max(clamp(16px,5vw,56px),env(safe-area-inset-left));padding-right:max(clamp(16px,5vw,56px),env(safe-area-inset-right))}
+.cols{grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
+.buy{max-width:100%}.badge{white-space:normal}
+
+/* ===== HIỆU ỨNG MỚI ===== */
+@keyframes rise{from{opacity:0;translate:0 30px}to{opacity:1;translate:0 0}}
+.hero .badge{animation:rise .9s .05s cubic-bezier(.2,.8,.2,1) both}
+.hero h1{animation:shine 7s linear infinite,rise 1s .2s cubic-bezier(.2,.8,.2,1) both}
+.hero .lead{animation:rise 1s .4s cubic-bezier(.2,.8,.2,1) both}
+.hero .buy{animation:pulse 2.6s ease-in-out infinite,rise 1s .55s cubic-bezier(.2,.8,.2,1) both}
+.hero .btns{animation:rise 1s .7s cubic-bezier(.2,.8,.2,1) both}
+
+.steps li:nth-child(1){--d:.35s}.steps li:nth-child(2){--d:.5s}.steps li:nth-child(3){--d:.65s}.steps li:nth-child(4){--d:.8s}
+.steps li{transition:opacity .6s,translate .7s cubic-bezier(.2,.8,.2,1)}
+.rv:not(.in) .steps li{opacity:0;translate:0 24px}
+.rv.in .steps li{transition-delay:var(--d,0s)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}65%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+.rv.in .steps li::before{animation:pop .7s var(--d,0s) both}
+h2.rv::after{transition:width .9s .35s cubic-bezier(.2,.8,.2,1)}
+h2.rv:not(.in)::after{width:0}
+
+.btn,summary{position:relative;overflow:hidden}
+summary{border-radius:16px}
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.4);transform:scale(0);animation:rip .7s ease-out forwards}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.btn.gold::after,.btn.zalo::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);transform:translateX(-130%);animation:sweep 4s 1.5s ease-in-out infinite}
+@keyframes nudge{50%{translate:0 -4px}}
+.btn.zalo{animation:nudge 3s ease-in-out infinite}
+
+header{transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+header.hide{transform:translateY(calc(-100% - 40px))}
+
+.fab{position:fixed;z-index:8;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;padding:14px 22px;border-radius:99px;color:#fff;font-weight:600;text-decoration:none;background:linear-gradient(135deg,#1a7dff,#0057e6);box-shadow:0 12px 32px rgba(0,104,255,.55),inset 0 1px 0 rgba(255,255,255,.35);opacity:0;translate:0 100px;pointer-events:none;transition:opacity .4s,translate .55s cubic-bezier(.2,.8,.2,1)}
+.fab.on{opacity:1;translate:0 0;pointer-events:auto}
+.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid rgba(60,140,255,.9);animation:ring 2s ease-out infinite}
+@keyframes ring{to{transform:scale(1.3,1.6);opacity:0}}
+.fab i{width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint)}
+
+.sp{position:fixed;z-index:20;width:7px;height:7px;border-radius:50%;pointer-events:none;box-shadow:0 0 10px currentColor}
+
+details::details-content{block-size:0;overflow:clip;transition:block-size .4s ease,content-visibility .4s allow-discrete}
+details[open]::details-content{block-size:auto}
+details:hover{border-color:rgba(63,242,176,.35)}
+
+@media(prefers-reduced-motion:reduce){.hero>*,.btn.zalo,.btn::after,.fab::before,.rv.in .steps li::before{animation:none!important}.steps li{transition:none}.rv:not(.in) .steps li{opacity:1;translate:none}header{transition:none}}
+
+/* ===== 3D CHO CÁC THẺ VĂN BẢN ===== */
+@property --ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes spin{to{--ang:360deg}}
+@keyframes glint{from{background-position:150% 0}to{background-position:-50% 0}}
+@keyframes coin{0%,78%{rotate:y 0deg}100%{rotate:y 360deg}}
+@keyframes bob{50%{translate:0 -3px}}
+
+/* thẻ nghiêng theo vị trí cuộn (chạy được cả trên điện thoại) */
+#hoi-dap{perspective:1200px}
+.panel,details,.buy{rotate:1 0 0 calc(var(--sr,0)*7deg)}
+
+/* viền cầu vồng xoay quanh thẻ */
+.panel{animation:spin 7s linear infinite;background:linear-gradient(160deg,rgba(9,40,32,.85),rgba(4,19,15,.85)) padding-box,conic-gradient(from var(--ang),rgba(63,242,176,.95),rgba(63,242,176,.05) 30%,rgba(255,200,61,.85) 55%,rgba(63,242,176,.05) 80%,rgba(63,242,176,.95)) border-box}
+.panel.sell{background:linear-gradient(160deg,rgba(40,32,9,.8),rgba(4,19,15,.85)) padding-box,conic-gradient(from var(--ang),rgba(255,200,61,.95),rgba(255,200,61,.05) 30%,rgba(63,242,176,.85) 55%,rgba(255,200,61,.05) 80%,rgba(255,200,61,.95)) border-box}
+.contact .panel{background:radial-gradient(600px circle at 50% 0%,rgba(0,104,255,.22),transparent 70%),linear-gradient(160deg,rgba(9,40,32,.88),rgba(4,19,15,.9)) padding-box,conic-gradient(from var(--ang),rgba(0,104,255,.95),rgba(63,242,176,.1) 30%,rgba(255,200,61,.9) 55%,rgba(63,242,176,.1) 80%,rgba(0,104,255,.95)) border-box}
+
+/* độ dày của thẻ như tấm kính khối */
+.panel{box-shadow:0 1px 0 rgba(63,242,176,.3),0 3px 0 rgba(8,52,41,.95),0 6px 0 rgba(3,22,17,.95),0 30px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1)}
+.panel.sell{box-shadow:0 1px 0 rgba(255,200,61,.35),0 3px 0 rgba(62,47,8,.95),0 6px 0 rgba(30,22,4,.95),0 30px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1)}
+
+/* vệt kính bóng quét qua thẻ khi hiện ra */
+.panel::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.16) 50%,transparent 60%) no-repeat;background-size:250% 100%;background-position:150% 0}
+.panel.in::before{animation:glint 1.7s .6s ease-out both}
+
+/* chữ nổi khối */
+h2,.panel h3{text-shadow:0 1px 0 #0f5a44,0 2px 0 #0c4636,0 3px 0 #093428,0 4px 0 #06231a,0 10px 22px rgba(0,0,0,.55)}
+.panel.sell h3{text-shadow:0 1px 0 #7a5a10,0 2px 0 #5c430c,0 3px 0 #3e2d08,0 4px 0 #261b05,0 10px 22px rgba(0,0,0,.55)}
+.buy em{display:inline-block;text-shadow:0 1px 0 #a67a00,0 2px 0 #7a5a00,0 3px 0 #4d3800,0 0 22px rgba(255,200,61,.7);animation:bob 3s ease-in-out infinite}
+
+/* số thứ tự xoay như đồng xu */
+.steps li{perspective:500px}
+.rv.in .steps li::before{animation:pop .7s var(--d,0s) both,coin 7s calc(var(--d,0s) + 2.5s) ease-in-out infinite}
+
+/* nhấn giữ trên điện thoại: thẻ lún xuống, ánh sáng bật lên */
+.panel{transition:scale .25s cubic-bezier(.2,.8,.2,1),transform .25s ease-out,box-shadow .3s}
+.panel.press{scale:.97}
+.panel.press::after{opacity:1}
+
+/* câu hỏi nổi lên khi mở */
+details{transition:border-color .3s,background .3s,translate .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s}
+details[open]{translate:0 -3px;box-shadow:0 2px 0 rgba(63,242,176,.25),0 22px 44px rgba(0,0,0,.5),0 0 34px rgba(63,242,176,.14)}
+
+@media(prefers-reduced-motion:reduce){.panel,.buy em{animation:none!important}.panel,details,.buy{rotate:none}.panel.in::before{animation:none}}
+</style>
+</head>
+<body>
+</div>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="spot" aria-hidden="true"></div>
+<div id="bar" aria-hidden="true"></div>
+
+<header>
+  <a class="logo" href="#top">DLS<b>STORE</b></a>
+  <nav>
+    <a href="#huong-dan">Mua bán thế nào</a>
+    <a href="#hoi-dap">Hỏi đáp</a>
+    <a class="cta-s" href="#lien-he">Nhắn tôi</a>
+  </nav>
+</header>
+
+<!-- ================= QR CODE ================= -->
+<div class="qr-card">
+
+  <div class="qr-glow"></div>
+
+  <div class="qr-content">
+
+    <div class="qr-title">
+      QUÉT QR ĐỂ LIÊN HỆ
+    </div>
+
+    <!-- ĐỔI TÊN ẢNH QR Ở ĐÂY -->
+    <div class="qr-image-box">
+      <img src="1790792201502_489283468812542497_5324133071496840200_95a84f9b05c7f122e1f80f6c9e748cd9.jpg" alt="QR Code">
+    </div>
+
+    <div class="qr-name">
+      DLS STORE
+    </div>
+
+    <div class="qr-desc">
+      Quét mã QR để liên hệ nhanh
+    </div>
+
+  </div>
+
+</div>
+
+
+<style>
+
+/* ================= KHUNG QR ================= */
+
+.qr-card {
+  position: relative;
+
+  width: 550px;
+  max-width: calc(100% - 30px);
+
+  margin: 30px auto;
+  padding: 25px;
+
+  box-sizing: border-box;
+
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.10),
+      rgba(255,255,255,.025)
+    );
+
+  border: 1px solid rgba(63,242,176,.35);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.35),
+    0 0 40px rgba(63,242,176,.12);
+
+  overflow: hidden;
+
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease;
+}
+
+
+/* ================= HOVER ================= */
+
+.qr-card:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.45),
+    0 0 55px rgba(63,242,176,.25);
+}
+
+
+/* ================= ÁNH SÁNG ================= */
+
+.qr-glow {
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  top: -90px;
+  right: -90px;
+
+  background: #3ff2b0;
+
+  border-radius: 50%;
+
+  filter: blur(70px);
+
+  opacity: .18;
+
+  pointer-events: none;
+}
+
+
+/* ================= NỘI DUNG ================= */
+
+.qr-content {
+  position: relative;
+
+  z-index: 2;
+
+  text-align: center;
+}
+
+
+/* ================= TIÊU ĐỀ ================= */
+
+.qr-title {
+  margin-bottom: 20px;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  letter-spacing: 2px;
+
+  color: #3ff2b0;
+}
+
+
+/* ================= KHUNG ẢNH QR ================= */
+
+.qr-image-box {
+
+  width: 510px;
+  max-width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  margin: 0 auto;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 0 40px rgba(63,242,176,.20),
+    0 18px 45px rgba(0,0,0,.30);
+
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease;
+}
+
+
+/* ================= HOVER QR ================= */
+
+.qr-card:hover .qr-image-box {
+
+  transform: scale(1.015);
+
+  box-shadow:
+    0 0 55px rgba(63,242,176,.30),
+    0 20px 50px rgba(0,0,0,.35);
+}
+
+
+/* ================= ẢNH QR ================= */
+
+.qr-image-box img {
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+
+  border-radius: 12px;
+}
+
+
+/* ================= TÊN ================= */
+
+.qr-name {
+
+  margin-top: 20px;
+
+  font-size: 20px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+
+  color: #ffffff;
+}
+
+
+/* ================= MÔ TẢ ================= */
+
+.qr-desc {
+
+  margin-top: 7px;
+
+  font-size: 13px;
+
+  color: rgba(255,255,255,.55);
+}
+
+
+/* ================= ĐIỆN THOẠI ================= */
+
+@media (max-width: 600px) {
+
+  .qr-card {
+
+    width: 100%;
+
+    max-width: calc(100% - 20px);
+
+    padding: 15px;
+
+    border-radius: 22px;
+  }
+
+  .qr-image-box {
+
+    width: 100%;
+
+    max-width: 510px;
+
+    padding: 9px;
+
+    border-radius: 18px;
+  }
+
+  .qr-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  .qr-name {
+    font-size: 17px;
+  }
+
+  .qr-desc {
+    font-size: 11px;
+  }
+
+}
+
+</style> 
+
+<main id="top">
+  <section class="hero">
+    <div class="badge"><i></i>Đang nhận thu số lượng lớn</div>
+    <h1>Mua bán acc DLS gọn gàng.</h1>
+    <p class="lead">Hướng dẫn mua và bán tài khoản Dream League Soccer từng bước, rõ ràng, giao dịch trực tiếp qua tin nhắn.</p>
+    <div class="buy">Mình vẫn nhận thu <em>SLL ACC DLS đen</em> nhé anh em, có nhu cầu liên hệ tôi.</div>
+    <div class="btns">
+      <a class="btn zalo" href="http://zalo.me/84374575302" target="_blank" rel="noopener">Nhắn Zalo ngay</a>
+      <a class="btn ghost" href="#huong-dan">Xem cách mua bán</a>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="track">
+    <span>Nhận thu SLL ACC DLS đen</span><b></b><span>Có nhu cầu nhắn Zalo</span><b></b><span>Báo giá trong ngày</span><b></b><span>Nhận thu SLL ACC DLS đen</span><b></b><span>Có nhu cầu ib Zalo</span><b></b><span>Báo giá trong ngày</span><b></b>
+    <span>Nhận thu SLL ACC DLS đen</span><b></b><span>Có nhu cầu nhắn Zalo</span><b></b><span>Báo giá trong ngày</span><b></b><span>Nhận thu SLL ACC DLS đen</span><b></b><span>Có nhu cầu ib Zalo</span><b></b><span>Báo giá trong ngày</span><b></b>
+  </div></div>
+
+  <section id="huong-dan">
+    <h2 class="rv">Mua bán như thế nào?</h2>
+    <p class="lead">Hai quy trình, đều làm qua tin nhắn riêng.</p>
+    <div class="cols">
+      <div class="panel rv">
+        <h3>Nếu bạn muốn mua</h3>
+        <ol class="steps">
+          <li><div><b>Nhắn nhu cầu</b><span>Cho biết bạn cần acc cỡ nào và ngân sách.</span></div></li>
+          <li><div><b>Xem thông tin acc</b><span>Nhận ảnh đội hình và chỉ số để kiểm tra.</span></div></li>
+          <li><div><b>Thanh toán</b><span>Chuyển khoản hoặc ví điện tử, có biên nhận.</span></div></li>
+          <li><div><b>Nhận acc và đổi bảo mật</b><span>Đổi thiết bị, email liên kết ngay sau khi nhận.</span></div></li>
+        </ol>
+      </div>
+      <div class="panel sell rv">
+        <h3>Nếu bạn muốn bán</h3>
+        <ol class="steps sell">
+          <li><div><b>Gửi thông tin acc</b><span>Ảnh đội hình, số xu, kim cương và giá mong muốn.</span></div></li>
+          <li><div><b>Nhận báo giá</b><span>Báo giá thu mua trong ngày, số lượng lớn có giá riêng.</span></div></li>
+          <li><div><b>Bàn giao acc</b><span>Gửi tài khoản sau khi hai bên chốt giá.</span></div></li>
+          <li><div><b>Nhận tiền</b><span>Thanh toán ngay khi kiểm tra xong.</span></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="hoi-dap">
+    <h2 class="rv">Câu hỏi thường gặp</h2>
+    <details><summary>Bán số lượng lớn có được giá tốt hơn không?</summary><p>Có. Mình nhận thu số lượng lớn và báo giá riêng theo từng lô, cứ ib để trao đổi.</p></details>
+    <details><summary>Tôi có được đổi email và thiết bị sau khi mua không?</summary><p>Có, và nên đổi ngay sau khi nhận acc để giữ toàn quyền sở hữu.</p></details>
+    <details><summary>Có cần đặt cọc trước không?</summary><p>Có đối với acc sợ bị bán mất khi chưa đủ tài chính.</p></details>
+  </section>
+
+  <section id="lien-he" class="contact">
+    <div class="panel rv">
+      <h2>Có nhu cầu thì liên hệ tôi</h2>
+      <p class="lead" style="margin-inline:auto">Nhận thu SLL ACC DLS đen, nhắn trực tiếp qua Zalo.</p>
+      <div class="btns">
+        <a class="btn zalo" href="http://zalo.me/84374575302" target="_blank" rel="noopener">Nhắn Zalo ngay</a>
+      </div>
+      <p class="note">Lưu ý: Có thắc mắc gì hay cần tư vấn vui lòng liên hệ Zalo.</p>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 DLS Acc. Uy tín chất lượng đặt lên hàng đầu.</footer>
+
+<a class="fab" href="http://zalo.me/84374575302" target="_blank" rel="noopener"><i></i>Ib Zalo</a>
+
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hd=document.querySelector('header'),fab=document.querySelector('.fab'),ct=document.getElementById('lien-he'),last=0;
+  addEventListener('scroll',function(){
+    if(scrollX)scrollTo(0,scrollY); // khoá ngang: luôn về mép trái
+    var y=scrollY;
+    if(Math.abs(y-last)>6){hd.classList.toggle('hide',y>last&&y>120);last=y;}
+    fab.classList.toggle('on',y>innerHeight*.5&&ct.getBoundingClientRect().top>innerHeight*.75);
+  },{passive:true});
+  if(reduce)return;
+  addEventListener('pointerdown',function(e){
+    var t=e.target.closest&&e.target.closest('.btn,summary');if(!t)return;
+    var r=t.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,d=document.createElement('span');
+    d.className='rip';d.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';
+    t.appendChild(d);setTimeout(function(){d.remove();},700);
+  },{passive:true});
+  function spark(x,c){
+    var p=document.createElement('i'),a=Math.random()*6.283,d=30+Math.random()*55;
+    p.className='sp';p.style.cssText='left:'+x[0]+'px;top:'+x[1]+'px;background:'+c+';color:'+c;document.body.appendChild(p);
+    p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(calc(-50% + '+Math.cos(a)*d+'px),calc(-50% + '+Math.sin(a)*d+'px)) scale(0)',opacity:0}],{duration:600+Math.random()*300,easing:'cubic-bezier(.1,.7,.3,1)'});
+    setTimeout(function(){p.remove();},950);
+  }
+  addEventListener('click',function(e){
+    var c=['#ffc83d','#3ff2b0','#ffffff'];
+    for(var i=0;i<10;i++)spark([e.clientX,e.clientY],c[i%3]);
+  });
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  if(!window.THREE)return;
+  var canvas=document.getElementById('scene');
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(45,1,.1,80);
+  camera.position.set(0,0,10);
+
+  scene.add(new THREE.AmbientLight(0x9fffe0,.5));
+  var key=new THREE.DirectionalLight(0xffffff,1.5);key.position.set(4,6,7);scene.add(key);
+  var gold=new THREE.PointLight(0xffc83d,2.2,24);gold.position.set(-6,-2,4);scene.add(gold);
+  var mint=new THREE.PointLight(0x3ff2b0,2,24);mint.position.set(5,3,-4);scene.add(mint);
+
+  // ---- Procedural soccer-ball texture (truncated icosahedron) ----
+  function ballMaps(){
+    var W=1024,H=512,phi=(1+Math.sqrt(5))/2,V=[],C=[],i,j,k;
+    [[0,1,phi],[0,-1,phi],[0,1,-phi],[0,-1,-phi],[1,phi,0],[-1,phi,0],[1,-phi,0],[-1,-phi,0],[phi,0,1],[-phi,0,1],[phi,0,-1],[-phi,0,-1]]
+      .forEach(function(v){var l=Math.hypot(v[0],v[1],v[2]);V.push([v[0]/l,v[1]/l,v[2]/l,1]);});
+    var e=2/Math.hypot(0,1,phi);
+    function dist(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);}
+    for(i=0;i<12;i++)for(j=i+1;j<12;j++)for(k=j+1;k<12;k++)
+      if(Math.abs(dist(V[i],V[j])-e)<.01&&Math.abs(dist(V[j],V[k])-e)<.01&&Math.abs(dist(V[i],V[k])-e)<.01){
+        var x=V[i][0]+V[j][0]+V[k][0],y=V[i][1]+V[j][1]+V[k][1],z=V[i][2]+V[j][2]+V[k][2],l=Math.hypot(x,y,z);
+        C.push([x/l,y/l,z/l,0]);
+      }
+    var cells=V.concat(C),n=cells.length;
+    var c1=document.createElement('canvas'),c2=document.createElement('canvas');
+    c1.width=c2.width=W;c1.height=c2.height=H;
+    var g1=c1.getContext('2d'),g2=c2.getContext('2d'),i1=g1.createImageData(W,H),i2=g2.createImageData(W,H);
+    for(var py=0;py<H;py++){
+      var lat=(.5-(py+.5)/H)*Math.PI,cl=Math.cos(lat),sl=Math.sin(lat);
+      for(var px=0;px<W;px++){
+        var lon=((px+.5)/W)*Math.PI*2,x=cl*Math.cos(lon),y=sl,z=cl*Math.sin(lon);
+        var b1=-2,b2=-2,bi=0;
+        for(var m=0;m<n;m++){
+          var d=x*cells[m][0]+y*cells[m][1]+z*cells[m][2];
+          if(d>b1){b2=b1;b1=d;bi=m;}else if(d>b2){b2=d;}
+        }
+        var t=Math.min(1,(b1-b2)/.035);t=t*t*(3-2*t);
+        var pent=cells[bi][3]===1,o=(py*W+px)*4;
+        var r=pent?14:246,g=pent?36:248,b=pent?30:246;
+        var sh=pent?0:(1-b1)*60; // subtle cell shading
+        r=r*t+30*(1-t)-sh*t;g=g*t+70*(1-t)-sh*t;b=b*t+60*(1-t)-sh*t;
+        i1.data[o]=r;i1.data[o+1]=g;i1.data[o+2]=b;i1.data[o+3]=255;
+        var h=60+195*t;i2.data[o]=i2.data[o+1]=i2.data[o+2]=h;i2.data[o+3]=255;
+      }
+    }
+    g1.putImageData(i1,0,0);g2.putImageData(i2,0,0);
+    var a=new THREE.CanvasTexture(c1),bm=new THREE.CanvasTexture(c2);
+    a.anisotropy=bm.anisotropy=8;
+    return {map:a,bump:bm};
+  }
+  var maps=ballMaps();
+
+  var ball=new THREE.Group(),spin=new THREE.Group();
+  var sphere=new THREE.Mesh(new THREE.SphereGeometry(1.6,96,64),
+    new THREE.MeshStandardMaterial({map:maps.map,bumpMap:maps.bump,bumpScale:2.2,roughness:.26,metalness:.08}));
+  spin.add(sphere);ball.add(spin);
+
+  // Fresnel glow shell
+  var glow=new THREE.Mesh(new THREE.SphereGeometry(1.95,48,32),new THREE.ShaderMaterial({
+    transparent:true,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false,
+    vertexShader:'varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader:'varying vec3 vN;void main(){float i=pow(.78-dot(vN,vec3(0.,0.,1.)),2.6);gl_FragColor=vec4(.25,.95,.69,1.)*i*1.6;}'
+  }));
+  ball.add(glow);
+
+  // Orbit rings
+  function ring(r,col,op){
+    var m=new THREE.Mesh(new THREE.TorusGeometry(r,.014,8,160),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op}));
+    ball.add(m);return m;
+  }
+  var r1=ring(2.5,0x3ff2b0,.8),r2=ring(3.05,0xffc83d,.55);
+  r1.rotation.x=1.2;r2.rotation.set(.5,.4,0);
+
+  // Round glowing sprite texture
+  function dot(){
+    var c=document.createElement('canvas');c.width=c.height=64;var g=c.getContext('2d');
+    var gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.3,'rgba(255,255,255,.5)');gr.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);
+  }
+  var sprite=dot();
+
+  // Ground glow under ball
+  var gc=document.createElement('canvas');gc.width=gc.height=256;var gg=gc.getContext('2d');
+  var grd=gg.createRadialGradient(128,128,0,128,128,128);grd.addColorStop(0,'rgba(63,242,176,.55)');grd.addColorStop(.5,'rgba(63,242,176,.15)');grd.addColorStop(1,'rgba(63,242,176,0)');
+  gg.fillStyle=grd;gg.fillRect(0,0,256,256);
+  var floor=new THREE.Mesh(new THREE.PlaneGeometry(7,7),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(gc),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+  floor.rotation.x=-Math.PI/2;floor.position.y=-2.7;ball.add(floor);
+
+  scene.add(ball);
+
+  // Pitch grid floor + center circle
+  var grid=new THREE.GridHelper(70,70,0x3ff2b0,0x0f6a50);
+  grid.position.y=-4.4;grid.material.transparent=true;grid.material.opacity=.5;scene.add(grid);
+  var pc=new THREE.Mesh(new THREE.RingGeometry(3.6,3.7,96),new THREE.MeshBasicMaterial({color:0x3ff2b0,side:THREE.DoubleSide,transparent:true,opacity:.9}));
+  pc.rotation.x=-Math.PI/2;pc.position.y=-4.38;scene.add(pc);
+  var pd=new THREE.Mesh(new THREE.CircleGeometry(.14,24),new THREE.MeshBasicMaterial({color:0xffc83d,side:THREE.DoubleSide}));
+  pd.rotation.x=-Math.PI/2;pd.position.y=-4.37;scene.add(pd);
+
+  // Stadium floodlight beams
+  var beams=[];
+  [[-10,-7,0xffffff],[10,-7,0xffffff],[-6,-11,0x3ff2b0],[6,-11,0xffc83d]].forEach(function(b,i){
+    var m=new THREE.Mesh(new THREE.ConeGeometry(2.6,18,40,1,true),new THREE.MeshBasicMaterial({color:b[2],transparent:true,opacity:.07,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false}));
+    m.position.set(b[0],1,b[1]);m.rotation.z=-Math.sign(b[0])*.3;m.userData.i=i;scene.add(m);beams.push(m);
+  });
+
+  // Shockwave rings
+  var waves=[];
+  for(var w=0;w<3;w++){
+    var wm=new THREE.Mesh(new THREE.RingGeometry(1,1.04,96),new THREE.MeshBasicMaterial({color:0x3ff2b0,side:THREE.DoubleSide,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+    wm.rotation.x=-Math.PI/2;wm.position.y=-2.68;wm.userData.p=w/3;ball.add(wm);waves.push(wm);
+  }
+
+  // Big soft halo behind the ball
+  var halo=new THREE.Sprite(new THREE.SpriteMaterial({map:sprite,color:0x3ff2b0,transparent:true,opacity:.32,blending:THREE.AdditiveBlending,depthWrite:false}));
+  halo.scale.set(11,11,1);halo.position.z=-2;ball.add(halo);
+  var halo2=new THREE.Sprite(new THREE.SpriteMaterial({map:sprite,color:0xffc83d,transparent:true,opacity:.16,blending:THREE.AdditiveBlending,depthWrite:false}));
+  halo2.scale.set(15,15,1);halo2.position.set(1,-1,-3);ball.add(halo2);
+
+  // Background dust
+  var N=420,bp=new Float32Array(N*3);
+  for(var q=0;q<N;q++){bp[q*3]=(Math.random()-.5)*30;bp[q*3+1]=(Math.random()-.5)*18;bp[q*3+2]=-Math.random()*14;}
+  var bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(bp,3));
+  var dust=new THREE.Points(bg,new THREE.PointsMaterial({map:sprite,color:0x3ff2b0,size:.09,transparent:true,opacity:.6,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scene.add(dust);
+
+  var mx=0,my=0,sy=0;
+  addEventListener('pointermove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;});
+  addEventListener('scroll',function(){sy=scrollY;},{passive:true});
+  function resize(){
+    var w=innerWidth,h=innerHeight,wide=w>820;
+    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    ball.position.set(wide?3.6:0,wide?.1:3,0);
+    ball.scale.setScalar(wide?1.15:.62);
+  }
+  addEventListener('resize',resize);resize();
+
+  var clock=new THREE.Clock();
+  (function frame(){
+    var t=reduce?0:clock.getElapsedTime();
+    spin.rotation.y=t*.55+sy*.003;spin.rotation.x=t*.2;spin.rotation.z=t*.1;
+    ball.rotation.y+=((mx*.7)-ball.rotation.y)*.05;
+    ball.rotation.x+=((my*.5)-ball.rotation.x)*.05;
+    sphere.position.y=Math.sin(t*1.2)*.18;
+    r1.rotation.z=t*.4;r2.rotation.z=-t*.3;
+    floor.scale.setScalar(1+Math.sin(t*1.2)*.06);
+    var bx=ball.position.x;
+    grid.position.z=(t*1.2)%1;pc.position.x=bx;pd.position.x=bx;grid.position.x=0;
+    beams.forEach(function(b){b.material.opacity=.06+.03*Math.sin(t*1.5+b.userData.i*1.7);});
+    waves.forEach(function(wv){var p=(t*.28+wv.userData.p)%1;wv.scale.setScalar(1+p*3.4);wv.material.opacity=(1-p)*.7;});
+    ball.position.y=(innerWidth>820?.1:3)+sy*.0016;
+    camera.position.z=10-Math.min(sy*.0012,2.2);
+    halo.material.opacity=.28+.06*Math.sin(t*1.4);
+    dust.rotation.y=t*.02;
+    camera.position.x+=((mx*1.2)-camera.position.x)*.05;
+    camera.position.y+=((-my*.8-sy*.0016)-camera.position.y)*.05;
+    camera.lookAt(0,-sy*.0008,0);
+    renderer.render(scene,camera);
+    requestAnimationFrame(frame);
+  })();
+})();
+(function(){
+  var bar=document.getElementById('bar'),spot=document.getElementById('spot');
+  addEventListener('scroll',function(){var h=document.documentElement.scrollHeight-innerHeight;bar.style.transform='scaleX('+(h>0?scrollY/h:0)+')';},{passive:true});
+  addEventListener('pointermove',function(e){spot.style.setProperty('--mx',e.clientX+'px');spot.style.setProperty('--my',e.clientY+'px');});
+})();
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=document.querySelectorAll('.rv');
+  if(reduce||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
+  else{var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.15});els.forEach(function(e){io.observe(e);});}
+  if(reduce||matchMedia('(pointer: coarse)').matches)return;
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.addEventListener('pointermove',function(e){
+      var r=p.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      p.style.transition='transform .08s';
+      p.style.transform='perspective(900px) rotateY('+((x-.5)*10)+'deg) rotateX('+((.5-y)*8)+'deg) scale3d(1.02,1.02,1.02)';
+      p.style.setProperty('--gx',x*100+'%');p.style.setProperty('--gy',y*100+'%');
+    });
+    p.addEventListener('pointerleave',function(){p.style.transition='transform .5s ease-out';p.style.transform='';});
+  });
+})();
+</script>
+<script>
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var els=[].slice.call(document.querySelectorAll('.panel,details,.buy')),busy=false;
+  function tilt(){
+    busy=false;var h=innerHeight;
+    els.forEach(function(e){
+      var r=e.getBoundingClientRect(),c=(r.top+r.height/2-h/2)/(h/2);
+      e.style.setProperty('--sr',Math.max(-1,Math.min(1,c)).toFixed(3));
+    });
+  }
+  function ask(){if(!busy){busy=true;requestAnimationFrame(tilt);}}
+  addEventListener('scroll',ask,{passive:true});addEventListener('resize',ask);tilt();
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.addEventListener('pointerdown',function(e){
+      if(e.pointerType==='mouse')return;
+      var r=p.getBoundingClientRect();
+      p.style.setProperty('--gx',(e.clientX-r.left)/r.width*100+'%');p.style.setProperty('--gy',(e.clientY-r.top)/r.height*100+'%');
+      p.classList.add('press');
+    },{passive:true});
+    ['pointerup','pointercancel','pointerleave'].forEach(function(n){p.addEventListener(n,function(){p.classList.remove('press');});});
+  });
+})();
+</script>
+</body>
+</html>
